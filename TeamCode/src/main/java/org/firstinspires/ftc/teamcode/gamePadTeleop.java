@@ -1,9 +1,32 @@
+/*
+Copyright 2025 FIRST Tech Challenge Team FTC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-//import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;        // For iterative OpModes
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;         // For TeleOp annotations
+
+import com.qualcomm.robotcore.hardware.DcMotor;                // For DC motors
+import com.qualcomm.robotcore.hardware.Servo;                  // For servos
+import com.qualcomm.robotcore.hardware.CRServo;                // For continuous rotation servos
+import com.qualcomm.robotcore.hardware.Gamepad;                // For gamepad reference (optional)
+import com.qualcomm.robotcore.hardware.HardwareMap;            // For mapping hardware
+
 
 /**
  * This file contains a minimal example of an iterative (Non-Linear) "OpMode". An OpMode is a
@@ -20,9 +43,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class gamePadTeleop extends OpMode{
     private DcMotor rightSideDrive=null;
     private DcMotor leftSideDrive=null;
-//    private DcMotor shooterMotor=null;
-//    private CRServo leftSideShooterControl;
-//    private CRServo rightSideShooterControl;
+    private DcMotor shooterMotor=null;
+    private Servo leftSideShooterControl;
+    private Servo rightSideShooterControl;
 
 
 
@@ -32,37 +55,38 @@ public class gamePadTeleop extends OpMode{
         rightSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // reverse this side for going forward
-//        hardwareMap.get(DcMotor.class, "shooterMotor");
-//        hardwareMap.get(CRServo.class, "leftSideShooterControl");
-//        hardwareMap.get(CRServo.class, "rightSideShooterControl");
-//        rightSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterMotor=hardwareMap.get(DcMotor.class, "shooterMotor");
+        leftSideShooterControl=hardwareMap.get(Servo.class, "leftSideShooterControl");
+        rightSideShooterControl=hardwareMap.get(Servo.class, "rightSideShooterControl");
+        rightSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
     public void loop() {
-        double drive = gamepad1.right_stick_y; // forward/backward
-        double turn = gamepad1.right_stick_x;   // turning
 
-        // Compute motor powers for arcade drive
-        double leftPower = -(drive + turn);
+        double drive = -gamepad1.right_stick_x; // forward/backward
+        double turn = -gamepad1.right_stick_y;   // turning
+        double speedClipper = Math.abs(gamepad1.left_stick_y);
+        // motor power
+        double leftPower = drive + turn;
         double rightPower = drive - turn;
 
-        // Clip power values to stay within [-1, 1]
-        leftPower = Math.max(-1, Math.min(1, leftPower));
-        rightPower = Math.max(-1, Math.min(1, rightPower));
+        // clip power values
+        leftPower = Math.max(-speedClipper, Math.min(speedClipper, leftPower));
+        rightPower = Math.max(-speedClipper, Math.min(speedClipper, rightPower));
 
         leftSideDrive.setPower(leftPower);
         rightSideDrive.setPower(rightPower);
+
+        if (gamepad1.dpad_up) {
+            leftSideShooterControl.setPosition(-0.67);
+            rightSideShooterControl.setPosition(0.67);
+        } else if (gamepad1.dpad_down) {
+            leftSideShooterControl.setPosition(0.67);
+            rightSideShooterControl.setPosition(-0.67);
+        }
+
     }
-
-//        if(gamepad1.dpad_up=true){
-//            leftSideShooterControl.setPower(1);
-//            rightSideShooterControl.setPower(1);
-//        } else if(gamepad1.dpad_down=true){
-//            leftSideShooterControl.setPower(-1);
-//            rightSideShooterControl.setPower(-1);
-//        }
-
 }
 // if it doesnt work then its start instead of loop
