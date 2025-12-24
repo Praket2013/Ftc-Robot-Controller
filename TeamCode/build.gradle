@@ -17,6 +17,16 @@ apply from: '../build.dependencies.gradle'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
+    sourceSets {
+        main {
+            assets {
+                srcDirs 'src\\main\\assets', 'src\\TeamCode\\java\\org.firstinspires.ftc.teamcode'
+            }
+        }
+    }
+    buildFeatures {
+        mlModelBinding true
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
@@ -25,4 +35,7 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation 'org.tensorflow:tensorflow-lite-support'
+    implementation 'org.tensorflow:tensorflow-lite-metadata'
+    implementation 'org.tensorflow:tensorflow-lite-gpu'
 }

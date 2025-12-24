@@ -18,6 +18,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 package org.firstinspires.ftc.teamcode;
 
+import static android.os.SystemClock.sleep;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;        // For iterative OpModes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;         // For TeleOp annotations
 
@@ -36,7 +38,6 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
-
 /**
  * This file contains a minimal example of an iterative (Non-Linear) "OpMode". An OpMode is a
  * 'program' that runs in either the autonomous or the TeleOp period of an FTC match. The names
@@ -48,22 +49,22 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
  */
 
 @TeleOp
-public class gamePadTeleop extends OpMode{
+public class scienceFairCode extends OpMode{
     private DcMotor rightSideDrive=null;
     private DcMotor leftSideDrive=null;
 
     private WebcamName webcam= null;
 
+    private Servo Servo=null;
     // private DcMotor shooterMotor=null;
     // private Servo leftSideShooterControl;
     // private Servo rightSideShooterControl;
-
-//rumble concept in progress
 
     public void init(){
         rightSideDrive=hardwareMap.get(DcMotor.class, "rightSideMotor");
         leftSideDrive=hardwareMap.get(DcMotor.class, "leftSideMotor");
         webcam=hardwareMap.get(WebcamName.class, "webcam");
+        Servo=hardwareMap.get(Servo.class, "sift");
         rightSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // reverse this side for going forward
@@ -73,23 +74,34 @@ public class gamePadTeleop extends OpMode{
 //        rightSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        leftSideDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-
+    public void setSifterPos(double angle){
+        Servo.setPosition(angle);
+    }
     @Override
     public void loop() {
 
         double drive = -gamepad1.right_stick_x; // forward/backward
         double turn = -gamepad1.right_stick_y;   // turning
-        double speedClipper = 0;
+        double speedClipper = 0.5;
         // motor power
 
-        if(gamepad1.right_bumper){
-            speedClipper=0.7;
-
-        } else if (gamepad1.left_bumper) {
-            speedClipper=0.9;
-
-        } else{
-            speedClipper=0.5;
+//        if(gamepad1.right_bumper){
+//            speedClipper=0.7;
+//
+//        } else if (gamepad1.left_bumper) {
+//            speedClipper=0.9;
+//
+//        } else{
+//            speedClipper=0.5;
+//        }
+        double previousPosition=0;
+        if(gamepad1.right_trigger>=0.7){
+            Servo.setPosition(previousPosition+0.1);
+            previousPosition=previousPosition+0.1;
+        } else if (gamepad1.left_trigger>=0.7) {
+            Servo.setPosition(previousPosition-0.1);
+            previousPosition=previousPosition-0.1;
+            sleep(100);
         }
         double leftPower = drive + turn;
         double rightPower = drive - turn;

@@ -7,7 +7,7 @@ public class javaBookExersizes extends OpMode {
 
     @Override
     public void init() {
-        telemetry.addData("adb", " works");
+        telemetry.addData("adb:", " works");
     }
 
     public void loop() {
